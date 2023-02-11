@@ -1,0 +1,218 @@
+---
+title: "APM466 Assignment 1 "
+output:
+  pdf_document: default
+  html_document: default
+date: 'Michael Singh, 1006478054'
+---
+
+
+```{r}
+dataset <-read.csv("APM466A1DataFINAL.csv")
+bonds <-dataset
+library("jrvFinance")
+```
+
+
+```{r}
+#To calculate the bond yields
+bonds$Coupon <- bonds$Coupon/200
+bonds$MaturityDate <- as.Date(c("2023-06-01", "2024-03-01", "2024-06-01", "2024-09-01", "2025-03-01", "2025-04-01", "2025-06-01", "2026-06-01", "2027-03-01", "2028-06-01"))
+bondsnum <-bonds[1:10,c(8,9,10,11,12,13,14,15,16,17)]
+nums <-c(1,2,3,4,5,6,7,8,9,10)
+for (j in nums){
+for (i in nums){
+bondsnum[j,i] <-(bond.yield(settle = as.Date("2023-02-01"), mature = bonds$MaturityDate[j], coupon = bonds$Coupon[j], freq = 2, price =  bondsnum[j,i], redemption_value = 100))
+}
+}
+
+yields<-bonds
+yields[1:10,c(8,9,10,11,12,13,14,15,16,17)] <- bondsnum
+yields
+```
+
+
+```{r}
+#The yield to maturity curve
+plot(yields$MaturityDate,yields$X16.Jan, type = "p", main = "Ytm Curve", xlab = "Maturity Date", ylab = "Yield Rate")
+abline(reg = lm(yields$X16.Jan~yields$MaturityDate), col = "red")
+points(yields$MaturityDate,yields$X17.Jan)
+points(yields$MaturityDate,yields$X18.Jan)
+points(yields$MaturityDate,yields$X19.Jan)
+points(yields$MaturityDate,yields$X20.Jan)
+points(yields$MaturityDate,yields$X23.Jan)
+points(yields$MaturityDate,yields$X24.Jan)
+points(yields$MaturityDate,yields$X25.Jan)
+points(yields$MaturityDate,yields$X26.Jan)
+points(yields$MaturityDate,yields$X27.Jan)
+lines(yields$MaturityDate,yields$X17.Jan)
+lines(yields$MaturityDate,yields$X18.Jan)
+lines(yields$MaturityDate,yields$X19.Jan)
+lines(yields$MaturityDate,yields$X20.Jan)
+lines(yields$MaturityDate,yields$X23.Jan)
+lines(yields$MaturityDate,yields$X24.Jan)
+lines(yields$MaturityDate,yields$X25.Jan)
+lines(yields$MaturityDate,yields$X26.Jan)
+lines(yields$MaturityDate,yields$X27.Jan)
+lines(yields$MaturityDate,yields$X16.Jan)
+
+
+
+```
+
+```{r}
+#Calculating the spot rates
+bondsnum2 <-bonds[1:10,c(8,9,10,11,12,13,14,15,16,17)]
+bondsnum2[1,] <- (-log(bondsnum2[1,]/(100+100*bonds$Coupon[1]))/(bonds$MonthsUntilMaturity[1]/12)*1)
+for (i in nums){
+bondsnum2[2,i] <- ((-log((bondsnum2[2,i]- (bonds$Coupon[2]*100)*exp(-bondsnum2[1,i]*(1/12))- (bonds$Coupon[2]*100)*exp(-bondsnum2[1,i]*(7/12)))/(100 + bonds$Coupon[2]*100)))*(12/13))
+}
+for (i in nums){
+bondsnum2[3,i] <-((-log((bondsnum2[3,i]- (bonds$Coupon[3]*100)*exp(-bondsnum2[1,i]*(4/12))- (bonds$Coupon[3]*100)*exp(-bondsnum2[1,i]*(10/12)))/(100 + bonds$Coupon[3]*100)))*(12/16))
+}
+for (i in nums){
+bondsnum2[4,i] <-((-log((bondsnum2[4,i]- (bonds$Coupon[4]*100)*exp(-bondsnum2[1,i]*(1/12))- (bonds$Coupon[4]*100)*exp(-bondsnum2[1,i]*(7/12))-(bonds$Coupon[4]*100)*exp(-bondsnum2[2,i]*(13/12)))/(100 + bonds$Coupon[4]*100)))*(12/19))
+}
+
+for (i in nums){
+bondsnum2[5,i] <-((-log((bondsnum2[5,i]- (bonds$Coupon[5]*100)*exp(-bondsnum2[1,i]*(1/12))- (bonds$Coupon[5]*100)*exp(-bondsnum2[1,i]*(7/12))-(bonds$Coupon[5]*100)*exp(-bondsnum2[2,i]*(13/12))-(bonds$Coupon[5]*100)*exp(-bondsnum2[2,i]*(19/12)))/(100 + bonds$Coupon[5]*100)))*(12/25))
+}
+for (i in nums){
+bondsnum2[6,i] <-((-log((bondsnum2[6,i]- (bonds$Coupon[6]*100)*exp(-bondsnum2[1,i]*(2/12))- (bonds$Coupon[6]*100)*exp(-bondsnum2[1,i]*(8/12))-(bonds$Coupon[6]*100)*exp(-bondsnum2[2,i]*(14/12))-(bonds$Coupon[6]*100)*exp(-bondsnum2[4,i]*(20/12)))/(100 + bonds$Coupon[6]*100)))*(12/26))
+}
+for (i in nums){
+bondsnum2[7,i] <-((-log((bondsnum2[7,i]- (bonds$Coupon[7]*100)*exp(-bondsnum2[1,i]*(4/12))- (bonds$Coupon[7]*100)*exp(-bondsnum2[1,i]*(10/12))-(bonds$Coupon[7]*100)*exp(-bondsnum2[3,i]*(16/12))-(bonds$Coupon[7]*100)*exp(-bondsnum2[3,i]*(22/12)))/(100 + bonds$Coupon[7]*100)))*(12/28))
+}
+for (i in nums){
+bondsnum2[8,i] <-((-log((bondsnum2[8,i]- (bonds$Coupon[8]*100)*exp(-bondsnum2[1,i]*(4/12))- (bonds$Coupon[8]*100)*exp(-bondsnum2[1,i]*(10/12))-(bonds$Coupon[8]*100)*exp(-bondsnum2[3,i]*(16/12))-(bonds$Coupon[8]*100)*exp(-bondsnum2[3,i]*(22/12))-(bonds$Coupon[8]*100)*exp(-bondsnum2[7,i]*(28/12))-(bonds$Coupon[8]*100)*exp(-bondsnum2[7,i]*(34/12)))/(100 + bonds$Coupon[8]*100)))*(12/40))
+}
+for (i in nums){
+bondsnum2[9,i] <-((-log((bondsnum2[9,i]- (bonds$Coupon[9]*100)*exp(-bondsnum2[1,i]*(1/12))- (bonds$Coupon[9]*100)*exp(-bondsnum2[1,i]*(7/12))-(bonds$Coupon[9]*100)*exp(-bondsnum2[2,i]*(13/12))-(bonds$Coupon[9]*100)*exp(-bondsnum2[2,i]*(19/12))-(bonds$Coupon[9]*100)*exp(-bondsnum2[5,i]*(25/12))-(bonds$Coupon[9]*100)*exp(-bondsnum2[5,i]*(31/12))-(bonds$Coupon[9]*100)*exp(-bondsnum2[8,i]*(37/12))-(bonds$Coupon[9]*100)*exp(-bondsnum2[8,i]*(43/12)))/(100 + bonds$Coupon[9]*100)))*(12/49))
+}
+for (i in nums){
+bondsnum2[10,i] <-((-log((bondsnum2[10,i]- (bonds$Coupon[10]*100)*exp(-bondsnum2[1,i]*(4/12))- (bonds$Coupon[10]*100)*exp(-bondsnum2[1,i]*(10/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[3,i]*(16/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[3,i]*(22/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[7,i]*(28/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[7,i]*(34/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[8,i]*(40/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[8,i]*(46/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[9,i]*(52/12))-(bonds$Coupon[10]*100)*exp(-bondsnum2[9,i]*(58/12)))/(100 + bonds$Coupon[10]*100)))*(12/64))
+}
+bondsnum2
+```
+
+```{r}
+#The spot Curve
+spot<-bonds
+spot[1:10,c(8,9,10,11,12,13,14,15,16,17)] <- bondsnum2
+spot
+plot(spot$MaturityDate,spot$X16.Jan, type = "p", main = "Spot Curve", xlab = "Maturity Date", ylab = "Spot Rate")
+points(spot$MaturityDate,spot$X17.Jan)
+points(spot$MaturityDate,spot$X18.Jan)
+points(spot$MaturityDate,spot$X19.Jan)
+points(spot$MaturityDate,spot$X20.Jan)
+points(spot$MaturityDate,spot$X23.Jan)
+points(spot$MaturityDate,spot$X24.Jan)
+points(spot$MaturityDate,spot$X25.Jan)
+points(spot$MaturityDate,spot$X26.Jan)
+points(spot$MaturityDate,spot$X27.Jan)
+lines(spot$MaturityDate,spot$X16.Jan)
+lines(spot$MaturityDate,spot$X17.Jan)
+lines(spot$MaturityDate,spot$X18.Jan)
+lines(spot$MaturityDate,spot$X19.Jan)
+lines(spot$MaturityDate,spot$X20.Jan)
+lines(spot$MaturityDate,spot$X23.Jan)
+lines(spot$MaturityDate,spot$X24.Jan)
+lines(spot$MaturityDate,spot$X25.Jan)
+lines(spot$MaturityDate,spot$X26.Jan)
+lines(spot$MaturityDate,spot$X27.Jan)
+abline(reg = lm(spot$X17.Jan~spot$MaturityDate), col = "red")
+
+```
+
+```{r}
+#Calculating the forward rates
+spot
+forwardt <-spot
+forwardt <-forwardt[-c(1,3,4),]
+forwardt
+forward <-forwardt[1:10,c(8,9,10,11,12,13,14,15,16,17)]
+forward <-na.omit(forward)
+rownames(forward)=c(1,2,3,4,5,6,7)
+forward
+newforward <- forward
+for (i in nums){
+newforward[2,i] <- -(forward[2,i]-forward[1,i])/1
+}
+for (i in nums){
+newforward[3,i] <- -(forward[3,i]-forward[1,i])/1
+}
+for (i in nums){
+newforward[4,i] <- -(forward[4,i]-forward[1,i])/1
+}
+for (i in nums){
+newforward[5,i] <- -(forward[5,i]-forward[1,i])/2
+}
+for (i in nums){
+newforward[6,i] <- -(forward[6,i]-forward[1,i])/3
+}
+for (i in nums){
+newforward[7,i] <- -(forward[7,i]-forward[1,i])/4
+}
+newforward <- newforward[-c(1),]
+newforward
+plot(newforward$X16.Jan)
+forwardt<- forwardt[-c(1),]
+forwardt
+rownames(forwardt)=c(1,2,3,4,5,6)
+forwardt[1:6,c(8,9,10,11,12,13,14,15,16,17)] <-newforward
+forwardt
+forwardt<- forwardt[-c(1,2),]
+#The forward rate curve
+plot(forwardt$MaturityDate, forwardt$X16.Jan, main = "Forward Curve", xlab = "Maturity Date", ylab = "Forward Rate")
+points(forwardt$MaturityDate, forwardt$X17.Jan)
+points(forwardt$MaturityDate, forwardt$X18.Jan)
+points(forwardt$MaturityDate, forwardt$X19.Jan)
+points(forwardt$MaturityDate, forwardt$x20.Jan)
+points(forwardt$MaturityDate, forwardt$X23.Jan)
+points(forwardt$MaturityDate, forwardt$X24.Jan)
+points(forwardt$MaturityDate, forwardt$X25.Jan)
+points(forwardt$MaturityDate, forwardt$X26.Jan)
+points(forwardt$MaturityDate, forwardt$X27.Jan)
+lines(forwardt$MaturityDate, forwardt$X16.Jan)
+lines(forwardt$MaturityDate, forwardt$X17.Jan)
+lines(forwardt$MaturityDate, forwardt$X18.Jan)
+lines(forwardt$MaturityDate, forwardt$X19.Jan)
+lines(forwardt$MaturityDate, forwardt$X20.Jan)
+lines(forwardt$MaturityDate, forwardt$X23.Jan)
+lines(forwardt$MaturityDate, forwardt$X24.Jan)
+lines(forwardt$MaturityDate, forwardt$X25.Jan)
+lines(forwardt$MaturityDate, forwardt$X26.Jan)
+lines(forwardt$MaturityDate, forwardt$X27.Jan)
+abline(reg = lm(forwardt$X17.Jan~forwardt$MaturityDate), col = "red")
+
+```
+
+```{r}
+#calculating the covariance matrix and eigenvalues for forward rates
+newforward<- newforward[-c(1,2),]
+rownames(newforward)=c(1,2,3,4)
+colnames(newforward)=c(1,2,3,4,5,6,7,8,9,10)
+newforward<- newforward[,-c(5,6,7,8,9,10)]
+forwardmatrix = cov(newforward)
+forwardmatrix
+eigen(forwardmatrix)
+
+```
+
+```{r}
+#calculating the covariance matrix and eigenvalues for yield rates
+yieldcal <-bondsnum
+yieldcal <-yieldcal[-c(1,2,4,5,6),]
+yield2 <- yieldcal
+for (j in c(1,2,3,4,5,6,7,8,9))
+for (i in c(1,2,3,4,5))
+{yield2[i,j]<- log(yieldcal[i,j+1]/yieldcal[i,j])
+}
+yield2 <- yield2[,-c(6,7,8,9,10)]
+rownames(yield2)=c(1,2,3,4,5)
+colnames(yield2)=c(1,2,3,4,5)
+cov(yield2)
+eigen(yield2)
+```
+
+
